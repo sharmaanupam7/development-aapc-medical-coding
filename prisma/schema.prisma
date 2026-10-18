@@ -1,0 +1,1260 @@
+/**
+ * generator client {
+ * provider = "prisma-client"
+ * output   = "../src/generated/prisma"
+ * }
+ * datasource db {
+ * provider = "mysql"
+ * }
+ * model blogcategory {
+ * id          String     @id
+ * name        String
+ * slug        String     @unique(map: "BlogCategory_slug_key")
+ * description String?    @db.Text
+ * isActive    Boolean    @default(true)
+ * createdAt   DateTime   @default(now())
+ * updatedAt   DateTime
+ * blogpost    blogpost[]
+ * @@index([isActive], map: "BlogCategory_isActive_idx")
+ * }
+ * model blogpost {
+ * id             String          @id
+ * title          String
+ * slug           String          @unique(map: "BlogPost_slug_key")
+ * excerpt        String?         @db.Text
+ * content        String          @db.LongText
+ * featuredImage  String?
+ * authorName     String?
+ * status         blogpost_status @default(DRAFT)
+ * isFeatured     Boolean         @default(false)
+ * publishedAt    DateTime?
+ * seoTitle       String?
+ * seoDescription String?         @db.Text
+ * readingTime    Int?
+ * categoryId     String?
+ * createdAt      DateTime        @default(now())
+ * updatedAt      DateTime
+ * authorId       String?
+ * user         user?         @relation(fields: [authorId], references: [id], map: "BlogPost_authorId_fkey")
+ * blogcategory blogcategory? @relation(fields: [categoryId], references: [id], map: "BlogPost_categoryId_fkey")
+ * @@index([authorId], map: "BlogPost_authorId_idx")
+ * @@index([categoryId], map: "BlogPost_categoryId_idx")
+ * @@index([createdAt], map: "BlogPost_createdAt_idx")
+ * @@index([isFeatured], map: "BlogPost_isFeatured_idx")
+ * @@index([publishedAt], map: "BlogPost_publishedAt_idx")
+ * @@index([status], map: "BlogPost_status_idx")
+ * }
+ * model certificate {
+ * id                String   @id
+ * userId            String
+ * courseId          String
+ * certificateNumber String   @unique(map: "Certificate_certificateNumber_key")
+ * issuedAt          DateTime @default(now())
+ * certificateUrl    String?
+ * course course @relation(fields: [courseId], references: [id], onDelete: Cascade, map: "Certificate_courseId_fkey")
+ * user   user   @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Certificate_userId_fkey")
+ * @@index([courseId], map: "Certificate_courseId_idx")
+ * @@index([issuedAt], map: "Certificate_issuedAt_idx")
+ * @@index([userId], map: "Certificate_userId_idx")
+ * }
+ * model contactus {
+ * id          Int                   @id @default(autoincrement())
+ * name        String                @db.VarChar(150)
+ * email       String                @db.VarChar(255)
+ * phone       String?               @db.VarChar(30)
+ * subject     String?               @db.VarChar(255)
+ * message     String                @db.Text
+ * inquiryType contactus_inquiryType
+ * status      contactus_status      @default(NEW)
+ * isRead      Boolean               @default(false)
+ * createdAt   DateTime              @default(now())
+ * updatedAt   DateTime              @updatedAt
+ * @@index([createdAt], map: "ContactUs_createdAt_idx")
+ * @@index([email], map: "ContactUs_email_idx")
+ * @@index([status], map: "ContactUs_status_idx")
+ * }
+ * model course {
+ * id               String        @id
+ * title            String
+ * slug             String        @unique(map: "Course_slug_key")
+ * shortDescription String?       @db.Text
+ * description      String?       @db.LongText
+ * thumbnail        String?
+ * price            Decimal       @db.Decimal(10, 2)
+ * level            course_level  @default(BEGINNER)
+ * status           course_status @default(DRAFT)
+ * durationMinutes  Int?
+ * categoryId       String?
+ * isPublished      Boolean       @default(false)
+ * isFeatured       Boolean       @default(false)
+ * createdAt        DateTime      @default(now())
+ * updatedAt        DateTime
+ * sortOrder        Int           @default(0)
+ * createdById      String?
+ * certificate    certificate[]
+ * coursecategory coursecategory?  @relation(fields: [categoryId], references: [id], map: "Course_categoryId_fkey")
+ * user           user?            @relation(fields: [createdById], references: [id], map: "Course_createdById_fkey")
+ * coursedocument coursedocument[]
+ * coursemodule   coursemodule[]
+ * courseprogress courseprogress[]
+ * coursereview   coursereview[]
+ * enrollment     enrollment[]
+ * lesson         lesson[]
+ * payment        payment[]
+ * @@index([categoryId], map: "Course_categoryId_idx")
+ * @@index([createdAt], map: "Course_createdAt_idx")
+ * @@index([createdById], map: "Course_createdById_idx")
+ * @@index([durationMinutes], map: "Course_durationMinutes_idx")
+ * @@index([isFeatured], map: "Course_isFeatured_idx")
+ * @@index([isPublished], map: "Course_isPublished_idx")
+ * @@index([level], map: "Course_level_idx")
+ * @@index([status], map: "Course_status_idx")
+ * }
+ * model coursecategory {
+ * id          String   @id
+ * name        String
+ * slug        String   @unique(map: "CourseCategory_slug_key")
+ * description String?  @db.Text
+ * isActive    Boolean  @default(true)
+ * createdAt   DateTime @default(now())
+ * updatedAt   DateTime
+ * sortOrder   Int      @default(0)
+ * course course[]
+ * @@index([isActive], map: "CourseCategory_isActive_idx")
+ * @@index([sortOrder], map: "CourseCategory_sortOrder_idx")
+ * }
+ * model coursedocument {
+ * id           String                      @id
+ * userId       String
+ * courseId     String?
+ * title        String
+ * description  String?
+ * fileUrl      String
+ * fileName     String
+ * documentType coursedocument_documentType @default(COURSE_MATERIAL)
+ * createdAt    DateTime                    @default(now())
+ * updatedAt    DateTime
+ * course course? @relation(fields: [courseId], references: [id], map: "CourseDocument_courseId_fkey")
+ * user   user    @relation(fields: [userId], references: [id], onDelete: Cascade, map: "CourseDocument_userId_fkey")
+ * @@index([courseId], map: "CourseDocument_courseId_idx")
+ * @@index([documentType], map: "CourseDocument_documentType_idx")
+ * @@index([userId], map: "CourseDocument_userId_idx")
+ * }
+ * model coursemodule {
+ * id          String   @id
+ * title       String
+ * description String?  @db.Text
+ * sortOrder   Int      @default(0)
+ * courseId    String
+ * createdAt   DateTime @default(now())
+ * updatedAt   DateTime
+ * course course   @relation(fields: [courseId], references: [id], onDelete: Cascade, map: "CourseModule_courseId_fkey")
+ * lesson lesson[]
+ * @@index([courseId], map: "CourseModule_courseId_idx")
+ * @@index([sortOrder], map: "CourseModule_sortOrder_idx")
+ * }
+ * model courseprogress {
+ * id           String   @id
+ * progress     Float    @default(0)
+ * completed    Boolean  @default(false)
+ * lastLessonId String?
+ * userId       String
+ * courseId     String
+ * createdAt    DateTime @default(now())
+ * updatedAt    DateTime
+ * course course @relation(fields: [courseId], references: [id], onDelete: Cascade, map: "CourseProgress_courseId_fkey")
+ * user   user   @relation(fields: [userId], references: [id], onDelete: Cascade, map: "CourseProgress_userId_fkey")
+ * @@unique([userId, courseId], map: "CourseProgress_userId_courseId_key")
+ * @@index([completed], map: "CourseProgress_completed_idx")
+ * @@index([courseId], map: "CourseProgress_courseId_idx")
+ * @@index([userId], map: "CourseProgress_userId_idx")
+ * }
+ * model coursereview {
+ * id        String   @id
+ * rating    Int
+ * comment   String?  @db.Text
+ * userId    String
+ * courseId  String
+ * createdAt DateTime @default(now())
+ * updatedAt DateTime
+ * course course @relation(fields: [courseId], references: [id], onDelete: Cascade, map: "CourseReview_courseId_fkey")
+ * user   user   @relation(fields: [userId], references: [id], onDelete: Cascade, map: "CourseReview_userId_fkey")
+ * @@unique([userId, courseId], map: "CourseReview_userId_courseId_key")
+ * @@index([courseId], map: "CourseReview_courseId_idx")
+ * @@index([rating], map: "CourseReview_rating_idx")
+ * }
+ * model enrollment {
+ * id         String            @id
+ * status     enrollment_status @default(ACTIVE)
+ * enrolledAt DateTime          @default(now())
+ * userId     String
+ * courseId   String
+ * progress   Int               @default(0)
+ * course         course           @relation(fields: [courseId], references: [id], onDelete: Cascade, map: "Enrollment_courseId_fkey")
+ * user           user             @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Enrollment_userId_fkey")
+ * lessonprogress lessonprogress[]
+ * @@unique([userId, courseId], map: "Enrollment_userId_courseId_key")
+ * @@index([courseId], map: "Enrollment_courseId_idx")
+ * @@index([status], map: "Enrollment_status_idx")
+ * @@index([userId], map: "Enrollment_userId_idx")
+ * }
+ * model examanswer {
+ * id               String   @id
+ * attemptId        String
+ * questionId       String
+ * selectedOptionId String?
+ * isCorrect        Boolean?
+ * marksObtained    Int      @default(0)
+ * createdAt        DateTime @default(now())
+ * updatedAt        DateTime
+ * examattempt    examattempt     @relation(fields: [attemptId], references: [id], onDelete: Cascade, map: "ExamAnswer_attemptId_fkey")
+ * examquestion   examquestion    @relation(fields: [questionId], references: [id], onDelete: Cascade, map: "ExamAnswer_questionId_fkey")
+ * questionoption questionoption? @relation(fields: [selectedOptionId], references: [id], map: "ExamAnswer_selectedOptionId_fkey")
+ * @@unique([attemptId, questionId], map: "ExamAnswer_attemptId_questionId_key")
+ * @@index([attemptId], map: "ExamAnswer_attemptId_idx")
+ * @@index([questionId], map: "ExamAnswer_questionId_idx")
+ * @@index([selectedOptionId], map: "ExamAnswer_selectedOptionId_idx")
+ * }
+ * model examattempt {
+ * id             String             @id
+ * userId         String
+ * mockExamId     String
+ * status         examattempt_status @default(IN_PROGRESS)
+ * startedAt      DateTime           @default(now())
+ * completedAt    DateTime?
+ * score          Float?
+ * percentage     Float?
+ * passed         Boolean?
+ * totalQuestions Int?
+ * correctAnswers Int?
+ * examanswer examanswer[]
+ * mockexam   mockexam     @relation(fields: [mockExamId], references: [id], onDelete: Cascade, map: "ExamAttempt_mockExamId_fkey")
+ * user       user         @relation(fields: [userId], references: [id], onDelete: Cascade, map: "ExamAttempt_userId_fkey")
+ * @@index([mockExamId], map: "ExamAttempt_mockExamId_idx")
+ * @@index([startedAt], map: "ExamAttempt_startedAt_idx")
+ * @@index([status], map: "ExamAttempt_status_idx")
+ * @@index([userId], map: "ExamAttempt_userId_idx")
+ * }
+ * model examquestion {
+ * id           String                    @id
+ * questionText String                    @db.LongText
+ * questionType examquestion_questionType @default(SINGLE_CHOICE)
+ * explanation  String?                   @db.LongText
+ * marks        Int                       @default(1)
+ * isActive     Boolean                   @default(true)
+ * createdById  String?
+ * createdAt    DateTime                  @default(now())
+ * updatedAt    DateTime
+ * examanswer       examanswer[]
+ * user             user?              @relation(fields: [createdById], references: [id], map: "ExamQuestion_createdById_fkey")
+ * mockexamquestion mockexamquestion[]
+ * questionoption   questionoption[]
+ * @@index([createdById], map: "ExamQuestion_createdById_idx")
+ * @@index([isActive], map: "ExamQuestion_isActive_idx")
+ * @@index([questionType], map: "ExamQuestion_questionType_idx")
+ * }
+ * model lesson {
+ * id          String      @id
+ * title       String
+ * slug        String
+ * description String?     @db.Text
+ * type        lesson_type
+ * content     String?     @db.LongText
+ * videoUrl    String?
+ * resourceUrl String?
+ * courseId    String
+ * sortOrder   Int         @default(0)
+ * isPreview   Boolean     @default(false)
+ * moduleId    String
+ * createdAt   DateTime    @default(now())
+ * updatedAt   DateTime
+ * createdById String?
+ * course         course           @relation(fields: [courseId], references: [id], onDelete: Cascade, map: "Lesson_courseId_fkey")
+ * user           user?            @relation(fields: [createdById], references: [id], map: "Lesson_createdById_fkey")
+ * coursemodule   coursemodule     @relation(fields: [moduleId], references: [id], onDelete: Cascade, map: "Lesson_moduleId_fkey")
+ * lessonprogress lessonprogress[]
+ * @@unique([courseId, slug], map: "Lesson_courseId_slug_key")
+ * @@index([courseId], map: "Lesson_courseId_idx")
+ * @@index([createdById], map: "Lesson_createdById_idx")
+ * @@index([moduleId], map: "Lesson_moduleId_idx")
+ * @@index([sortOrder], map: "Lesson_sortOrder_idx")
+ * }
+ * model lessonprogress {
+ * id           String    @id
+ * enrollmentId String
+ * lessonId     String
+ * completed    Boolean   @default(false)
+ * completedAt  DateTime?
+ * createdAt    DateTime  @default(now())
+ * updatedAt    DateTime
+ * enrollment enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade, map: "LessonProgress_enrollmentId_fkey")
+ * lesson     lesson     @relation(fields: [lessonId], references: [id], onDelete: Cascade, map: "LessonProgress_lessonId_fkey")
+ * @@unique([enrollmentId, lessonId], map: "LessonProgress_enrollmentId_lessonId_key")
+ * @@index([completed], map: "LessonProgress_completed_idx")
+ * @@index([enrollmentId], map: "LessonProgress_enrollmentId_idx")
+ * @@index([lessonId], map: "LessonProgress_lessonId_idx")
+ * }
+ * model mockexam {
+ * id              String        @id
+ * title           String
+ * slug            String        @unique(map: "MockExam_slug_key")
+ * description     String?       @db.Text
+ * type            mockexam_type @default(MOCK)
+ * isPublished     Boolean       @default(false)
+ * sortOrder       Int           @default(0)
+ * createdAt       DateTime      @default(now())
+ * updatedAt       DateTime
+ * durationMinutes Int?
+ * passingScore    Int?
+ * totalMarks      Int?
+ * examattempt      examattempt[]
+ * mockexamquestion mockexamquestion[]
+ * @@index([isPublished], map: "MockExam_isPublished_idx")
+ * @@index([sortOrder], map: "MockExam_sortOrder_idx")
+ * @@index([type], map: "MockExam_type_idx")
+ * }
+ * model mockexamquestion {
+ * id         String @id
+ * mockExamId String
+ * questionId String
+ * sortOrder  Int    @default(0)
+ * marks      Int    @default(1)
+ * mockexam     mockexam     @relation(fields: [mockExamId], references: [id], onDelete: Cascade, map: "MockExamQuestion_mockExamId_fkey")
+ * examquestion examquestion @relation(fields: [questionId], references: [id], onDelete: Cascade, map: "MockExamQuestion_questionId_fkey")
+ * @@unique([mockExamId, questionId], map: "MockExamQuestion_mockExamId_questionId_key")
+ * @@index([mockExamId], map: "MockExamQuestion_mockExamId_idx")
+ * @@index([questionId], map: "MockExamQuestion_questionId_idx")
+ * @@index([sortOrder], map: "MockExamQuestion_sortOrder_idx")
+ * }
+ * model payment {
+ * id               String         @id
+ * userId           String
+ * courseId         String?
+ * amount           Decimal        @db.Decimal(10, 2)
+ * currency         String         @default("INR")
+ * status           payment_status @default(PENDING)
+ * paymentGateway   String?
+ * gatewayOrderId   String?
+ * gatewayPaymentId String?
+ * gatewaySignature String?
+ * createdAt        DateTime       @default(now())
+ * updatedAt        DateTime
+ * course course? @relation(fields: [courseId], references: [id], map: "Payment_courseId_fkey")
+ * user   user    @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Payment_userId_fkey")
+ * @@index([courseId], map: "Payment_courseId_idx")
+ * @@index([createdAt], map: "Payment_createdAt_idx")
+ * @@index([gatewayOrderId], map: "Payment_gatewayOrderId_idx")
+ * @@index([gatewayPaymentId], map: "Payment_gatewayPaymentId_idx")
+ * @@index([status], map: "Payment_status_idx")
+ * @@index([userId], map: "Payment_userId_idx")
+ * }
+ * model questionoption {
+ * id         String   @id
+ * optionText String   @db.Text
+ * isCorrect  Boolean  @default(false)
+ * sortOrder  Int      @default(0)
+ * questionId String
+ * createdAt  DateTime @default(now())
+ * updatedAt  DateTime
+ * examanswer   examanswer[]
+ * examquestion examquestion @relation(fields: [questionId], references: [id], onDelete: Cascade, map: "QuestionOption_questionId_fkey")
+ * @@index([questionId], map: "QuestionOption_questionId_idx")
+ * @@index([sortOrder], map: "QuestionOption_sortOrder_idx")
+ * }
+ * model refreshtoken {
+ * id         String    @id
+ * userId     String
+ * tokenHash  String    @unique(map: "RefreshToken_tokenHash_key")
+ * expiresAt  DateTime
+ * revokedAt  DateTime?
+ * createdAt  DateTime  @default(now())
+ * lastUsedAt DateTime?
+ * user user @relation(fields: [userId], references: [id], onDelete: Cascade, map: "RefreshToken_userId_fkey")
+ * @@index([expiresAt], map: "RefreshToken_expiresAt_idx")
+ * @@index([userId], map: "RefreshToken_userId_idx")
+ * }
+ * model user {
+ * id            String    @id @default(uuid())
+ * firstname     String
+ * middlename    String?
+ * lastname      String
+ * email         String    @unique(map: "User_email_key")
+ * passwordHash  String
+ * role          user_role @default(STUDENT)
+ * createdAt     DateTime  @default(now())
+ * updatedAt     DateTime  @updatedAt
+ * emailVerified Boolean   @default(false)
+ * isActive      Boolean   @default(true)
+ * mobile String? @unique(map: "User_mobile_key") @db.VarChar(20)
+ * country   String?
+ * countryId Int?
+ * state   String?
+ * stateId Int?
+ * city   String?
+ * cityId Int?
+ * postalCode   String?
+ * postalCodeId Int?
+ * address String?
+ * bio     String?
+ * dateOfBirth DateTime?
+ * gender      user_gender?
+ * profileCompleted Boolean @default(false)
+ * profileImage     String?
+ * countryRelation country?     @relation(fields: [countryId], references: [country_id], onDelete: SetNull)
+ * stateRelation   state?       @relation(fields: [stateId], references: [state_id], onDelete: SetNull)
+ * cityRelation    city?        @relation(fields: [cityId], references: [city_id], onDelete: SetNull)
+ * postalRelation  postal_code? @relation(fields: [postalCodeId], references: [postal_code_id], onDelete: SetNull)
+ * blogpost            blogpost[]
+ * certificate         certificate[]
+ * course              course[]
+ * coursedocument      coursedocument[]
+ * courseprogress      courseprogress[]
+ * coursereview        coursereview[]
+ * enrollment          enrollment[]
+ * examattempt         examattempt[]
+ * examquestion        examquestion[]
+ * lesson              lesson[]
+ * passwordResetTokens passwordresettoken[]
+ * payment             payment[]
+ * refreshtoken        refreshtoken[]
+ * @@index([createdAt], map: "User_createdAt_idx")
+ * @@index([email], map: "User_email_idx")
+ * @@index([isActive], map: "User_isActive_idx")
+ * @@index([role], map: "User_role_idx")
+ * @@index([countryId], map: "User_countryId_idx")
+ * @@index([stateId], map: "User_stateId_idx")
+ * @@index([cityId], map: "User_cityId_idx")
+ * @@index([postalCodeId], map: "User_postalCodeId_idx")
+ * }
+ * model country {
+ * country_id   Int      @id @default(autoincrement())
+ * country_name String   @db.VarChar(100)
+ * country_code String   @unique(map: "Country_code_key") @db.Char(2)
+ * phoneCode    String   @db.VarChar(10)
+ * isActive     Boolean  @default(true)
+ * createdAt    DateTime @default(now())
+ * updatedAt    DateTime @updatedAt
+ * // TEMPORARILY NULLABLE
+ * mobileMinLength Int?
+ * mobileMaxLength Int?
+ * mobilePattern   String? @db.VarChar(255)
+ * states state[]
+ * users  user[]
+ * @@index([isActive], map: "Country_isActive_idx")
+ * @@index([country_name], map: "Country_name_idx")
+ * }
+ * model state {
+ * state_id   Int      @id @default(autoincrement())
+ * state_name String   @db.VarChar(100)
+ * country_id Int
+ * isActive   Boolean  @default(true)
+ * createdAt  DateTime @default(now())
+ * updatedAt  DateTime @updatedAt
+ * country country @relation(fields: [country_id], references: [country_id], onDelete: Cascade)
+ * cities  city[]
+ * users   user[]
+ * @@unique([country_id, state_name], map: "State_country_name_key")
+ * @@index([country_id], map: "State_countryId_idx")
+ * @@index([isActive], map: "State_isActive_idx")
+ * @@index([state_name], map: "State_name_idx")
+ * }
+ * model city {
+ * city_id   Int      @id @default(autoincrement())
+ * city_name String   @db.VarChar(150)
+ * state_id  Int
+ * isActive  Boolean  @default(true)
+ * createdAt DateTime @default(now())
+ * updatedAt DateTime @updatedAt
+ * state       state         @relation(fields: [state_id], references: [state_id], onDelete: Cascade)
+ * postalCodes postal_code[]
+ * users       user[]
+ * @@unique([state_id, city_name], map: "City_state_name_key")
+ * @@index([state_id], map: "City_stateId_idx")
+ * @@index([isActive], map: "City_isActive_idx")
+ * @@index([city_name], map: "City_name_idx")
+ * }
+ * model postal_code {
+ * postal_code_id Int      @id @default(autoincrement())
+ * postal_code    String   @db.VarChar(20)
+ * city_id        Int
+ * isActive       Boolean  @default(true)
+ * createdAt      DateTime @default(now())
+ * updatedAt      DateTime @updatedAt
+ * city  city   @relation(fields: [city_id], references: [city_id], onDelete: Cascade)
+ * users user[]
+ * @@unique([city_id, postal_code], map: "PostalCode_city_code_key")
+ * @@index([city_id], map: "PostalCode_cityId_idx")
+ * @@index([postal_code], map: "PostalCode_code_idx")
+ * @@index([isActive], map: "PostalCode_isActive_idx")
+ * }
+ * model passwordresettoken {
+ * id        String   @id @default(uuid())
+ * tokenHash String   @unique
+ * userId    String
+ * expiresAt DateTime
+ * createdAt DateTime @default(now())
+ * user user @relation(fields: [userId], references: [id], onDelete: Cascade, map: "PasswordResetToken_userId_fkey")
+ * @@index([userId], map: "PasswordResetToken_userId_idx")
+ * @@index([expiresAt], map: "PasswordResetToken_expiresAt_idx")
+ * }
+ * enum enrollment_status {
+ * ACTIVE
+ * COMPLETED
+ * CANCELLED
+ * }
+ * enum examquestion_questionType {
+ * SINGLE_CHOICE
+ * MULTIPLE_CHOICE
+ * TRUE_FALSE
+ * }
+ * enum examattempt_status {
+ * IN_PROGRESS
+ * COMPLETED
+ * ABANDONED
+ * }
+ * enum lesson_type {
+ * VIDEO
+ * ARTICLE
+ * PDF
+ * QUIZ
+ * }
+ * enum mockexam_type {
+ * MOCK
+ * EXAM
+ * }
+ * enum payment_status {
+ * PENDING
+ * SUCCESS
+ * FAILED
+ * REFUNDED
+ * }
+ * enum contactus_inquiryType {
+ * COURSE
+ * REGISTRATION
+ * PAYMENT
+ * CERTIFICATION
+ * TECHNICAL_SUPPORT
+ * GENERAL
+ * }
+ * enum user_role {
+ * STUDENT
+ * INSTRUCTOR
+ * ADMIN
+ * }
+ * enum blogpost_status {
+ * DRAFT
+ * PUBLISHED
+ * ARCHIVED
+ * }
+ * enum contactus_status {
+ * NEW
+ * READ
+ * REPLIED
+ * CLOSED
+ * }
+ * enum course_level {
+ * BEGINNER
+ * INTERMEDIATE
+ * ADVANCED
+ * }
+ * enum coursedocument_documentType {
+ * COURSE_MATERIAL
+ * STUDY_MATERIAL
+ * ASSIGNMENT
+ * OTHER
+ * }
+ * enum course_status {
+ * DRAFT
+ * PUBLISHED
+ * ARCHIVED
+ * }
+ * enum user_gender {
+ * MALE
+ * FEMALE
+ * OTHER
+ * PREFER_NOT_TO_SAY
+ * }
+ */
+
+// updated schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model blogcategory {
+  id          String     @id
+  name        String
+  slug        String     @unique(map: "BlogCategory_slug_key")
+  description String?    @db.Text
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime
+  blogpost    blogpost[]
+
+  @@index([isActive], map: "BlogCategory_isActive_idx")
+}
+
+model blogpost {
+  id             String          @id
+  title          String
+  slug           String          @unique(map: "BlogPost_slug_key")
+  excerpt        String?         @db.Text
+  content        String          @db.LongText
+  featuredImage  String?
+  authorName     String?
+  status         blogpost_status @default(DRAFT)
+  isFeatured     Boolean         @default(false)
+  publishedAt    DateTime?
+  seoTitle       String?
+  seoDescription String?         @db.Text
+  readingTime    Int?
+  categoryId     String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime
+  authorId       String?
+
+  user         user?         @relation(fields: [authorId], references: [id], map: "BlogPost_authorId_fkey")
+  blogcategory blogcategory? @relation(fields: [categoryId], references: [id], map: "BlogPost_categoryId_fkey")
+
+  @@index([authorId], map: "BlogPost_authorId_idx")
+  @@index([categoryId], map: "BlogPost_categoryId_idx")
+  @@index([createdAt], map: "BlogPost_createdAt_idx")
+  @@index([isFeatured], map: "BlogPost_isFeatured_idx")
+  @@index([publishedAt], map: "BlogPost_publishedAt_idx")
+  @@index([status], map: "BlogPost_status_idx")
+}
+
+model certificate {
+  id                String   @id
+  userId            String
+  courseId          String
+  certificateNumber String   @unique(map: "Certificate_certificateNumber_key")
+  issuedAt          DateTime @default(now())
+  certificateUrl    String?
+
+  course course @relation(fields: [courseId], references: [id], onDelete: Cascade, map: "Certificate_courseId_fkey")
+  user   user   @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Certificate_userId_fkey")
+
+  @@index([courseId], map: "Certificate_courseId_idx")
+  @@index([issuedAt], map: "Certificate_issuedAt_idx")
+  @@index([userId], map: "Certificate_userId_idx")
+}
+
+model contactus {
+  id          Int                   @id @default(autoincrement())
+  name        String                @db.VarChar(150)
+  email       String                @db.VarChar(255)
+  phone       String?               @db.VarChar(30)
+  subject     String?               @db.VarChar(255)
+  message     String                @db.Text
+  inquiryType contactus_inquiryType
+  status      contactus_status      @default(NEW)
+  isRead      Boolean               @default(false)
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+
+  @@index([createdAt], map: "ContactUs_createdAt_idx")
+  @@index([email], map: "ContactUs_email_idx")
+  @@index([status], map: "ContactUs_status_idx")
+}
+
+model course {
+  id               String        @id
+  title            String
+  slug             String        @unique(map: "Course_slug_key")
+  shortDescription String?       @db.Text
+  description      String?       @db.LongText
+  thumbnail        String?
+  price            Decimal       @db.Decimal(10, 2)
+  level            course_level  @default(BEGINNER)
+  status           course_status @default(DRAFT)
+  durationMinutes  Int?
+  categoryId       String?
+  isPublished      Boolean       @default(false)
+  isFeatured       Boolean       @default(false)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime
+  sortOrder        Int           @default(0)
+  createdById      String?
+
+  certificate    certificate[]
+  coursecategory coursecategory?  @relation(fields: [categoryId], references: [id], map: "Course_categoryId_fkey")
+  user           user?            @relation(fields: [createdById], references: [id], map: "Course_createdById_fkey")
+  coursedocument coursedocument[]
+  coursemodule   coursemodule[]
+  coursereview   coursereview[]
+  enrollment     enrollment[]
+  lesson         lesson[]
+  payment        payment[]
+
+  @@index([categoryId], map: "Course_categoryId_idx")
+  @@index([createdAt], map: "Course_createdAt_idx")
+  @@index([createdById], map: "Course_createdById_idx")
+  @@index([durationMinutes], map: "Course_durationMinutes_idx")
+  @@index([isFeatured], map: "Course_isFeatured_idx")
+  @@index([isPublished], map: "Course_isPublished_idx")
+  @@index([level], map: "Course_level_idx")
+  @@index([status], map: "Course_status_idx")
+}
+
+model coursecategory {
+  id          String   @id
+  name        String
+  slug        String   @unique(map: "CourseCategory_slug_key")
+  description String?  @db.Text
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+  sortOrder   Int      @default(0)
+
+  course course[]
+
+  @@index([isActive], map: "CourseCategory_isActive_idx")
+  @@index([sortOrder], map: "CourseCategory_sortOrder_idx")
+}
+
+model coursedocument {
+  id           String                      @id
+  userId       String
+  courseId     String?
+  title        String
+  description  String?
+  fileUrl      String
+  fileName     String
+  documentType coursedocument_documentType @default(COURSE_MATERIAL)
+  createdAt    DateTime                    @default(now())
+  updatedAt    DateTime
+
+  course course? @relation(fields: [courseId], references: [id], map: "CourseDocument_courseId_fkey")
+  user   user    @relation(fields: [userId], references: [id], onDelete: Cascade, map: "CourseDocument_userId_fkey")
+
+  @@index([courseId], map: "CourseDocument_courseId_idx")
+  @@index([documentType], map: "CourseDocument_documentType_idx")
+  @@index([userId], map: "CourseDocument_userId_idx")
+}
+
+model coursemodule {
+  id          String   @id
+  title       String
+  description String?  @db.Text
+  sortOrder   Int      @default(0)
+  courseId    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+
+  course course   @relation(fields: [courseId], references: [id], onDelete: Cascade, map: "CourseModule_courseId_fkey")
+  lesson lesson[]
+
+  @@index([courseId], map: "CourseModule_courseId_idx")
+  @@index([sortOrder], map: "CourseModule_sortOrder_idx")
+}
+
+model courseprogress {
+  id           String   @id @default(uuid())
+  enrollmentId String
+  progress     Float    @default(0)
+  completed    Boolean  @default(false)
+  lastLessonId String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  enrollment enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade, map: "CourseProgress_enrollmentId_fkey")
+
+  @@unique([enrollmentId], map: "CourseProgress_enrollmentId_key")
+  @@index([progress], map: "CourseProgress_progress_idx")
+  @@index([completed], map: "CourseProgress_completed_idx")
+}
+
+model coursereview {
+  id        String   @id
+  rating    Int
+  comment   String?  @db.Text
+  userId    String
+  courseId  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+
+  course course @relation(fields: [courseId], references: [id], onDelete: Cascade, map: "CourseReview_courseId_fkey")
+  user   user   @relation(fields: [userId], references: [id], onDelete: Cascade, map: "CourseReview_userId_fkey")
+
+  @@unique([userId, courseId], map: "CourseReview_userId_courseId_key")
+  @@index([courseId], map: "CourseReview_courseId_idx")
+  @@index([rating], map: "CourseReview_rating_idx")
+}
+
+model enrollment {
+  id          String            @id @default(uuid())
+  userId      String
+  courseId    String
+  status      enrollment_status @default(ACTIVE)
+  enrolledAt  DateTime          @default(now())
+  startDate   DateTime?
+  endDate     DateTime?
+  completedAt DateTime?
+
+  user   user   @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Enrollment_userId_fkey")
+  course course @relation(fields: [courseId], references: [id], onDelete: Cascade, map: "Enrollment_courseId_fkey")
+
+  courseprogress courseprogress?
+  lessonprogress lessonprogress[]
+
+  @@unique([userId, courseId], map: "Enrollment_userId_courseId_key")
+  @@index([userId], map: "Enrollment_userId_idx")
+  @@index([courseId], map: "Enrollment_courseId_idx")
+  @@index([status], map: "Enrollment_status_idx")
+  @@index([enrolledAt], map: "Enrollment_enrolledAt_idx")
+  @@index([startDate], map: "Enrollment_startDate_idx")
+  @@index([endDate], map: "Enrollment_endDate_idx")
+}
+
+model examanswer {
+  id               String   @id
+  attemptId        String
+  questionId       String
+  selectedOptionId String?
+  isCorrect        Boolean?
+  marksObtained    Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime
+
+  examattempt    examattempt     @relation(fields: [attemptId], references: [id], onDelete: Cascade, map: "ExamAnswer_attemptId_fkey")
+  examquestion   examquestion    @relation(fields: [questionId], references: [id], onDelete: Cascade, map: "ExamAnswer_questionId_fkey")
+  questionoption questionoption? @relation(fields: [selectedOptionId], references: [id], map: "ExamAnswer_selectedOptionId_fkey")
+
+  @@unique([attemptId, questionId], map: "ExamAnswer_attemptId_questionId_key")
+  @@index([attemptId], map: "ExamAnswer_attemptId_idx")
+  @@index([questionId], map: "ExamAnswer_questionId_idx")
+  @@index([selectedOptionId], map: "ExamAnswer_selectedOptionId_idx")
+}
+
+model examattempt {
+  id             String             @id
+  userId         String
+  mockExamId     String
+  status         examattempt_status @default(IN_PROGRESS)
+  startedAt      DateTime           @default(now())
+  completedAt    DateTime?
+  score          Float?
+  percentage     Float?
+  passed         Boolean?
+  totalQuestions Int?
+  correctAnswers Int?
+
+  examanswer examanswer[]
+  mockexam   mockexam     @relation(fields: [mockExamId], references: [id], onDelete: Cascade, map: "ExamAttempt_mockExamId_fkey")
+  user       user         @relation(fields: [userId], references: [id], onDelete: Cascade, map: "ExamAttempt_userId_fkey")
+
+  @@index([mockExamId], map: "ExamAttempt_mockExamId_idx")
+  @@index([startedAt], map: "ExamAttempt_startedAt_idx")
+  @@index([status], map: "ExamAttempt_status_idx")
+  @@index([userId], map: "ExamAttempt_userId_idx")
+}
+
+model examquestion {
+  id           String                    @id
+  questionText String                    @db.LongText
+  questionType examquestion_questionType @default(SINGLE_CHOICE)
+  explanation  String?                   @db.LongText
+  marks        Int                       @default(1)
+  isActive     Boolean                   @default(true)
+  createdById  String?
+  createdAt    DateTime                  @default(now())
+  updatedAt    DateTime
+
+  examanswer       examanswer[]
+  user             user?              @relation(fields: [createdById], references: [id], map: "ExamQuestion_createdById_fkey")
+  mockexamquestion mockexamquestion[]
+  questionoption   questionoption[]
+
+  @@index([createdById], map: "ExamQuestion_createdById_idx")
+  @@index([isActive], map: "ExamQuestion_isActive_idx")
+  @@index([questionType], map: "ExamQuestion_questionType_idx")
+}
+
+model lesson {
+  id          String      @id
+  title       String
+  slug        String
+  description String?     @db.Text
+  type        lesson_type
+  content     String?     @db.LongText
+  videoUrl    String?
+  resourceUrl String?
+  courseId    String
+  sortOrder   Int         @default(0)
+  isPreview   Boolean     @default(false)
+  moduleId    String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime
+  createdById String?
+
+  course         course           @relation(fields: [courseId], references: [id], onDelete: Cascade, map: "Lesson_courseId_fkey")
+  user           user?            @relation(fields: [createdById], references: [id], map: "Lesson_createdById_fkey")
+  coursemodule   coursemodule     @relation(fields: [moduleId], references: [id], onDelete: Cascade, map: "Lesson_moduleId_fkey")
+  lessonprogress lessonprogress[]
+
+  @@unique([courseId, slug], map: "Lesson_courseId_slug_key")
+  @@index([courseId], map: "Lesson_courseId_idx")
+  @@index([createdById], map: "Lesson_createdById_idx")
+  @@index([moduleId], map: "Lesson_moduleId_idx")
+  @@index([sortOrder], map: "Lesson_sortOrder_idx")
+}
+
+model lessonprogress {
+  id           String    @id @default(uuid())
+  enrollmentId String
+  lessonId     String
+  completed    Boolean   @default(false)
+  completedAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  enrollment enrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade, map: "LessonProgress_enrollmentId_fkey")
+  lesson     lesson     @relation(fields: [lessonId], references: [id], onDelete: Cascade, map: "LessonProgress_lessonId_fkey")
+
+  @@unique([enrollmentId, lessonId], map: "LessonProgress_enrollmentId_lessonId_key")
+  @@index([completed], map: "LessonProgress_completed_idx")
+  @@index([enrollmentId], map: "LessonProgress_enrollmentId_idx")
+  @@index([lessonId], map: "LessonProgress_lessonId_idx")
+}
+
+model mockexam {
+  id              String        @id
+  title           String
+  slug            String        @unique(map: "MockExam_slug_key")
+  description     String?       @db.Text
+  type            mockexam_type @default(MOCK)
+  isPublished     Boolean       @default(false)
+  sortOrder       Int           @default(0)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime
+  durationMinutes Int?
+  passingScore    Int?
+  totalMarks      Int?
+
+  examattempt      examattempt[]
+  mockexamquestion mockexamquestion[]
+
+  @@index([isPublished], map: "MockExam_isPublished_idx")
+  @@index([sortOrder], map: "MockExam_sortOrder_idx")
+  @@index([type], map: "MockExam_type_idx")
+}
+
+model mockexamquestion {
+  id         String @id
+  mockExamId String
+  questionId String
+  sortOrder  Int    @default(0)
+  marks      Int    @default(1)
+
+  mockexam     mockexam     @relation(fields: [mockExamId], references: [id], onDelete: Cascade, map: "MockExamQuestion_mockExamId_fkey")
+  examquestion examquestion @relation(fields: [questionId], references: [id], onDelete: Cascade, map: "MockExamQuestion_questionId_fkey")
+
+  @@unique([mockExamId, questionId], map: "MockExamQuestion_mockExamId_questionId_key")
+  @@index([mockExamId], map: "MockExamQuestion_mockExamId_idx")
+  @@index([questionId], map: "MockExamQuestion_questionId_idx")
+  @@index([sortOrder], map: "MockExamQuestion_sortOrder_idx")
+}
+
+model payment {
+  id               String         @id
+  userId           String
+  courseId         String?
+  amount           Decimal        @db.Decimal(10, 2)
+  currency         String         @default("INR")
+  status           payment_status @default(PENDING)
+  paymentGateway   String?
+  gatewayOrderId   String?
+  gatewayPaymentId String?
+  gatewaySignature String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime
+
+  course course? @relation(fields: [courseId], references: [id], map: "Payment_courseId_fkey")
+  user   user    @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Payment_userId_fkey")
+
+  @@index([courseId], map: "Payment_courseId_idx")
+  @@index([createdAt], map: "Payment_createdAt_idx")
+  @@index([gatewayOrderId], map: "Payment_gatewayOrderId_idx")
+  @@index([gatewayPaymentId], map: "Payment_gatewayPaymentId_idx")
+  @@index([status], map: "Payment_status_idx")
+  @@index([userId], map: "Payment_userId_idx")
+}
+
+model questionoption {
+  id         String   @id
+  optionText String   @db.Text
+  isCorrect  Boolean  @default(false)
+  sortOrder  Int      @default(0)
+  questionId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime
+
+  examanswer   examanswer[]
+  examquestion examquestion @relation(fields: [questionId], references: [id], onDelete: Cascade, map: "QuestionOption_questionId_fkey")
+
+  @@index([questionId], map: "QuestionOption_questionId_idx")
+  @@index([sortOrder], map: "QuestionOption_sortOrder_idx")
+}
+
+model refreshtoken {
+  id         String    @id
+  userId     String
+  tokenHash  String    @unique(map: "RefreshToken_tokenHash_key")
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  createdAt  DateTime  @default(now())
+  lastUsedAt DateTime?
+
+  user user @relation(fields: [userId], references: [id], onDelete: Cascade, map: "RefreshToken_userId_fkey")
+
+  @@index([expiresAt], map: "RefreshToken_expiresAt_idx")
+  @@index([userId], map: "RefreshToken_userId_idx")
+}
+
+model user {
+  id            String    @id @default(uuid())
+  firstname     String
+  middlename    String?
+  lastname      String
+  email         String    @unique(map: "User_email_key")
+  passwordHash  String
+  role          user_role @default(STUDENT)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  emailVerified Boolean   @default(false)
+  isActive      Boolean   @default(true)
+
+  mobile String? @unique(map: "User_mobile_key") @db.VarChar(20)
+
+  country   String?
+  countryId Int?
+
+  state   String?
+  stateId Int?
+
+  city   String?
+  cityId Int?
+
+  postalCode   String?
+  postalCodeId Int?
+
+  address String?
+  bio     String?
+
+  dateOfBirth DateTime?
+  gender      user_gender?
+
+  profileCompleted Boolean @default(false)
+  profileImage     String?
+
+  countryRelation country?     @relation(fields: [countryId], references: [country_id], onDelete: SetNull)
+  stateRelation   state?       @relation(fields: [stateId], references: [state_id], onDelete: SetNull)
+  cityRelation    city?        @relation(fields: [cityId], references: [city_id], onDelete: SetNull)
+  postalRelation  postal_code? @relation(fields: [postalCodeId], references: [postal_code_id], onDelete: SetNull)
+
+  blogpost            blogpost[]
+  certificate         certificate[]
+  course              course[]
+  coursedocument      coursedocument[]
+  coursereview        coursereview[]
+  enrollment          enrollment[]
+  examattempt         examattempt[]
+  examquestion        examquestion[]
+  lesson              lesson[]
+  passwordResetTokens passwordresettoken[]
+  payment             payment[]
+  refreshtoken        refreshtoken[]
+
+  @@index([createdAt], map: "User_createdAt_idx")
+  @@index([email], map: "User_email_idx")
+  @@index([isActive], map: "User_isActive_idx")
+  @@index([role], map: "User_role_idx")
+  @@index([countryId], map: "User_countryId_idx")
+  @@index([stateId], map: "User_stateId_idx")
+  @@index([cityId], map: "User_cityId_idx")
+  @@index([postalCodeId], map: "User_postalCodeId_idx")
+}
+
+model country {
+  country_id   Int      @id @default(autoincrement())
+  country_name String   @db.VarChar(100)
+  country_code String   @unique(map: "Country_code_key") @db.Char(2)
+  phoneCode    String   @db.VarChar(10)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  mobileMinLength Int?
+  mobileMaxLength Int?
+  mobilePattern   String? @db.VarChar(255)
+
+  states state[]
+  users  user[]
+
+  @@index([isActive], map: "Country_isActive_idx")
+  @@index([country_name], map: "Country_name_idx")
+}
+
+model state {
+  state_id   Int      @id @default(autoincrement())
+  state_name String   @db.VarChar(100)
+  country_id Int
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  country country @relation(fields: [country_id], references: [country_id], onDelete: Cascade)
+  cities  city[]
+  users   user[]
+
+  @@unique([country_id, state_name], map: "State_country_name_key")
+  @@index([country_id], map: "State_countryId_idx")
+  @@index([isActive], map: "State_isActive_idx")
+  @@index([state_name], map: "State_name_idx")
+}
+
+model city {
+  city_id   Int      @id @default(autoincrement())
+  city_name String   @db.VarChar(150)
+  state_id  Int
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  state       state         @relation(fields: [state_id], references: [state_id], onDelete: Cascade)
+  postalCodes postal_code[]
+  users       user[]
+
+  @@unique([state_id, city_name], map: "City_state_name_key")
+  @@index([state_id], map: "City_stateId_idx")
+  @@index([isActive], map: "City_isActive_idx")
+  @@index([city_name], map: "City_name_idx")
+}
+
+model postal_code {
+  postal_code_id Int      @id @default(autoincrement())
+  postal_code    String   @db.VarChar(20)
+  city_id        Int
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  city  city   @relation(fields: [city_id], references: [city_id], onDelete: Cascade)
+  users user[]
+
+  @@unique([city_id, postal_code], map: "PostalCode_city_code_key")
+  @@index([city_id], map: "PostalCode_cityId_idx")
+  @@index([postal_code], map: "PostalCode_code_idx")
+  @@index([isActive], map: "PostalCode_isActive_idx")
+}
+
+model passwordresettoken {
+  id        String   @id @default(uuid())
+  tokenHash String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user user @relation(fields: [userId], references: [id], onDelete: Cascade, map: "PasswordResetToken_userId_fkey")
+
+  @@index([userId], map: "PasswordResetToken_userId_idx")
+  @@index([expiresAt], map: "PasswordResetToken_expiresAt_idx")
+}
+
+enum enrollment_status {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum examquestion_questionType {
+  SINGLE_CHOICE
+  MULTIPLE_CHOICE
+  TRUE_FALSE
+}
+
+enum examattempt_status {
+  IN_PROGRESS
+  COMPLETED
+  ABANDONED
+}
+
+enum lesson_type {
+  VIDEO
+  ARTICLE
+  PDF
+  QUIZ
+}
+
+enum mockexam_type {
+  MOCK
+  EXAM
+}
+
+enum payment_status {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+enum contactus_inquiryType {
+  COURSE
+  REGISTRATION
+  PAYMENT
+  CERTIFICATION
+  TECHNICAL_SUPPORT
+  GENERAL
+}
+
+enum user_role {
+  STUDENT
+  INSTRUCTOR
+  ADMIN
+}
+
+enum blogpost_status {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum contactus_status {
+  NEW
+  READ
+  REPLIED
+  CLOSED
+}
+
+enum course_level {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum coursedocument_documentType {
+  COURSE_MATERIAL
+  STUDY_MATERIAL
+  ASSIGNMENT
+  OTHER
+}
+
+enum course_status {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum user_gender {
+  MALE
+  FEMALE
+  OTHER
+  PREFER_NOT_TO_SAY
+}

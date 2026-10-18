@@ -1,6 +1,11 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# dependencies
+
+# ============================================================
+# Development AAPC Medical Coding - Git Ignore Rules
+# ============================================================
+
+# Dependencies
 /node_modules
 /.pnp
 .pnp.*
@@ -9,33 +14,137 @@
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
+PROJECT_STRUCTURE.txt
 
-# testing
+# Testing
 /coverage
 
-# next.js
+# Next.js build output
 /.next/
 /out/
 
-# production
+# Production build
 /build
 
-# misc
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Miscellaneous
 .DS_Store
 *.pem
 
-# debug
+# Debug logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
-
-# vercel
+# Deployment
 .vercel
 
-# typescript
+# TypeScript
 *.tsbuildinfo
 next-env.d.ts
+
+# Generated Prisma Client
+/src/generated/prisma/
+
+
+# ------------------------------------------------------------
+# Environment variables and secrets
+# ------------------------------------------------------------
+.env
+.env.*
+!.env.example
+
+# ------------------------------------------------------------
+# Dependencies
+# ------------------------------------------------------------
+node_modules/
+
+# ------------------------------------------------------------
+# Next.js build output and cache
+# ------------------------------------------------------------
+.next/
+out/
+
+# ------------------------------------------------------------
+# TypeScript build cache
+# ------------------------------------------------------------
+*.tsbuildinfo
+
+# ------------------------------------------------------------
+# Logs and temporary files
+# ------------------------------------------------------------
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+*.tmp
+*.temp
+
+# ------------------------------------------------------------
+# Operating system files
+# ------------------------------------------------------------
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ------------------------------------------------------------
+# IDE and editor files
+# ------------------------------------------------------------
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.example.json
+
+.idea/
+*.swp
+*.swo
+
+# ------------------------------------------------------------
+# Local test and coverage output
+# ------------------------------------------------------------
+coverage/
+.nyc_output/
+
+# ------------------------------------------------------------
+# Local database dumps and backups
+# ------------------------------------------------------------
+*.sql.gz
+*.dump
+*.bak
+*.backup
+
+# ------------------------------------------------------------
+# Local environment and diagnostic files
+# ------------------------------------------------------------
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ------------------------------------------------------------
+# Generated Prisma client
+# ------------------------------------------------------------
+# Keep prisma/schema.prisma and prisma/migrations committed.
+# Regenerate the client with: npx prisma generate
+/src/generated/prisma/
+
+# ------------------------------------------------------------
+# Dynamically uploaded student profile images
+# ------------------------------------------------------------
+# Do not publish user-uploaded profile photos.
+# Keep approved static placeholders if required.
+# Review these exceptions before using them.
+public/images/profile/*
+public/images/team/*
+!public/images/profile/avatar.jpg
+!public/images/profile/profile1.jpg
+
+# ------------------------------------------------------------
+# Local project structure dumps
+# ------------------------------------------------------------
+# Large diagnostic listings are not application source code.
+PROJECT_STRUCTURE.txt
